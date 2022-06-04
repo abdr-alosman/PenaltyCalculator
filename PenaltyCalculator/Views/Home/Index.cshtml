@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@model FormModel
+
+
+@{
+    List<Country> countries = ViewBag.CountryList;
+}
+<section>
+    <h4><strong>Book Penalty Calculation</strong></h4>
+    <br />
+    <form asp-controller="Home" asp-action="Index" method="post">
+        @if (TempData["message"] != null)
+        {
+            <partial name="_ResultMessage" model="@(TempData.Get<AlertMessage>("message"))" />
+        }
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">Date the book is checked out<span class="text-danger">*</span></label>
+                <input type="date" required name="checkedOut_Date" class="form-control" />
+                <span asp-validation-for="checkedOut_Date" class="text-danger"></span>
+
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date the book is returned<span class="text-danger">*</span></label>
+                <input type="date" required name="return_Date" class="form-control" />
+                <span asp-validation-for="return_Date" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Country<span class="text-danger">*</span></label><br />
+                <select class="form-control" required asp-for="CountryId" asp-items="@(new SelectList(countries,"Id","Name"))">
+                    <option value="" selected>Select</option>
+                </select>
+                <span asp-validation-for="CountryId" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div align="center">
+            <button type="submit" class="btn btn-success">Calculate</button>
+        </div>
+    </form>
+</section>
+
+<br />
+@{
+    CalculatePenaltyModel mdl = ViewBag.CalculatePenaltyModel;
+    if (mdl != null)
+    {
+        <section>
+            <div>
+                <p><strong>Checked Out:</strong> @mdl.CheckDate.ToShortDateString() - <strong>Returned date: </strong>@mdl.ReturnedDate.ToShortDateString() - <strong>Country: </strong> @mdl.Country</p>
+                <p>Calculated Business Days: @mdl.BusinessDays </p>
+                <p>Calculated penalty: @mdl.Penalty.ToString("0.00") @mdl.CountryCurrencey</p>
+            </div>
+        </section>
+    }
+}
+
+
+
